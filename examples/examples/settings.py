@@ -67,3 +67,5 @@ ROOT_URLCONF = 'examples.urls'
 WSGI_APPLICATION = 'examples.wsgi.application'
 
 STATIC_URL = '/static/'
+
+ADMINJOURNAL_MODEL_WHITELIST = '__all__'

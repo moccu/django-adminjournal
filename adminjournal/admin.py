@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Entry
@@ -11,7 +13,7 @@ class EntryAdmin(admin.ModelAdmin):
         '__str__', 'action', 'content_type_repr', 'user_repr', 'object_id',
         'lazy_description'
     )
-    list_filter = ('action', 'content_type__app_label',)
+    list_filter = ('action', 'content_type__app_label', 'user_repr')
     date_hierarchy = 'timestamp'
     readonly_fields = (
         'timestamp', 'action', 'user', 'user_repr', 'content_type', 'content_type_repr',
@@ -41,14 +43,23 @@ class EntryAdmin(admin.ModelAdmin):
     def object_repr(self, obj):
         """
         Helper to get the str-representation of the logged object.
-
-        TODO: We might add a link to the object if a modeladmin is registered for
-        the content type.
         """
         if not obj.object_id or not obj.content_type:
             return 'n/a'
+
         try:
-            return str(obj.content_type.get_object_for_this_type(pk=obj.object_id))
+            instance = obj.content_type.get_object_for_this_type(pk=obj.object_id)
+
+            if instance._meta.model in self.admin_site._registry:
+                return mark_safe('<a href="{}">{}</a>'.format(
+                    reverse('admin:%s_%s_change' % (
+                        instance._meta.app_label,
+                        instance._meta.model_name
+                    ), args=(obj.object_id,)),
+                    str(instance)
+                ))
+
+            return str(instance)
         except:
             return 'n/a'
     object_repr.short_description = _('Object')

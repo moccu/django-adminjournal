@@ -1,6 +1,8 @@
 import types
 
+from django.conf import settings
 from django.contrib import admin
+from django.db.models.base import ModelBase
 
 from .mixins import JournaledModelAdminMixin
 
@@ -26,18 +28,29 @@ def patch_admin_site(site):
         """
         Patched site.register that injects the JournaledModelAdminMixin if not present.
         """
+
+        if isinstance(model_or_iterable, ModelBase):
+            model_or_iterable = [model_or_iterable]
+
         if not admin_class:
             admin_class = admin.ModelAdmin
 
-        if not hasattr(admin_class, 'log_to_adminjournal'):
-            # Mixin not present, create new class and add the mixin.
-            admin_class = type(
-                admin_class.__name__,
-                (JournaledModelAdminMixin, admin_class),
-                {}
-            )
+        whitelisted_models = getattr(settings, 'ADMINJOURNAL_MODEL_WHITELIST', ())
+        for model in model_or_iterable:
+            if (
+                whitelisted_models == '__all__' or
+                model._meta.label in whitelisted_models
+            ) and not hasattr(admin_class, 'log_to_adminjournal'):
+                # Mixin not present, create new class and add the mixin.
+                patched_admin_class = type(
+                    admin_class.__name__,
+                    (JournaledModelAdminMixin, admin_class),
+                    {}
+                )
+            else:
+                patched_admin_class = admin_class
 
-        return vender_site_register(model_or_iterable, admin_class=admin_class, **options)
+            vender_site_register([model], admin_class=patched_admin_class, **options)
 
     # Apply the new function as method to site instance.
     site.register = types.MethodType(adminjournal_site_register, site)

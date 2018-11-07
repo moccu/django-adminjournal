@@ -13,6 +13,7 @@ pytest-cov = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
 "psycopg2-binary" = "*"
+tox = "*"
 
 [packages]
 django = "*"

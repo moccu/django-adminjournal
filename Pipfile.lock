@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5b7ff41c0257835b292eeec21854202f61c7b840b84fd5c3b0ff4725ea7cdea3"
+            "sha256": "f571dda4ab522dcdaca4e41a29072577f145c1d4e15f2fc90881ccf4f51dbaf1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -141,6 +141,13 @@
                 "sha256:d610c1bb404daf85976d7a82eb2ada120f04671007266b708606565dd03b5be6"
             ],
             "version": "==3.0.10"
+        },
+        "flexmock": {
+            "hashes": [
+                "sha256:fe95c8727f4db73dc8f2f7b4548bffe7992440a965fefd60da291abda5352c2b"
+            ],
+            "index": "pypi",
+            "version": "==0.10.2"
         },
         "idna": {
             "hashes": [

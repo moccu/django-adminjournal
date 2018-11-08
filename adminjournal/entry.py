@@ -54,7 +54,7 @@ class Entry(object):
             self.ACTION_CHANGE,
             self.ACTION_DELETE
         ):
-            raise ValueError('Invalid `action` provided: {}'.format(self.action))
+            raise ValueError('Invalid `action` provided: {}'.format(action))
 
         self.action = action
 

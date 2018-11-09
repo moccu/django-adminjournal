@@ -1,3 +1,6 @@
+import django
+
+
 DEBUG = True
 
 SECRET_KEY = 'test'
@@ -25,6 +28,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
+
+if django.VERSION[:2] < (1, 10):
+    MIDDLEWARE_CLASSES = MIDDLEWARE
 
 ROOT_URLCONF = 'tests.urls'
 

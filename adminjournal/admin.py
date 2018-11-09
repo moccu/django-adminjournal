@@ -1,9 +1,14 @@
 from django.contrib import admin
-from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Entry
+
+
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 
 @admin.register(Entry)

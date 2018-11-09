@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 
 import flexmock
@@ -81,7 +82,8 @@ class TestEntry:
         self.init_kwargs['timestamp'] = datetime(2018, 11, 9, 11, 0, 0, tzinfo=timezone.utc)
         self.init_kwargs['description'] = 'foo'
         entry = Entry(**self.init_kwargs)
-        assert str(entry) == 'VIEW by admin on auth.user.%s: foo' % admin_user.pk
+        entry.user.username = u'ädmin'
+        assert str(entry) == 'VIEW by ädmin on auth.user.%s: foo' % admin_user.pk
 
     def test_str_payload(self, admin_user):
         self.init_kwargs['timestamp'] = datetime(2018, 11, 9, 11, 0, 0, tzinfo=timezone.utc)

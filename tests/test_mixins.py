@@ -1,9 +1,15 @@
+import django
 from django.contrib import admin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.urls import reverse
 
 from adminjournal.models import Entry
+
+
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 
 class GroupInline(admin.StackedInline):
@@ -41,7 +47,9 @@ class TestJournaledModelAdminMixin:
         assert entry.content_type_repr == 'auth.permission'
         assert entry.object_id == str(perms[0].pk)
         assert entry.description == 'Added.'
-        assert entry.payload == {'message': [{'added': {}}]}
+
+        if django.VERSION[:2] >= (1, 10):
+            assert entry.payload == {'message': [{'added': {}}]}
 
     def test_log_change_get(self, admin_client, admin_user):
         obj = Permission.objects.create(
@@ -87,7 +95,9 @@ class TestJournaledModelAdminMixin:
         assert entry.content_type_repr == 'auth.permission'
         assert entry.object_id == str(obj.pk)
         assert entry.description == 'No fields changed.'
-        assert entry.payload == {'message': []}
+
+        if django.VERSION[:2] >= (1, 10):
+            assert entry.payload == {'message': []}
 
     def test_log_change_post_change(self, admin_client, admin_user):
         obj = Permission.objects.create(
@@ -115,7 +125,9 @@ class TestJournaledModelAdminMixin:
         assert entry.content_type_repr == 'auth.permission'
         assert entry.object_id == str(obj.pk)
         assert entry.description == 'Changed codename.'
-        assert entry.payload == {'message': [{'changed': {'fields': ['codename']}}]}
+
+        if django.VERSION[:2] >= (1, 10):
+            assert entry.payload == {'message': [{'changed': {'fields': ['codename']}}]}
 
     def test_log_delete(self, admin_client, admin_user):
         obj = Permission.objects.create(
@@ -160,21 +172,34 @@ class TestJournaledModelAdminMixin:
         )
         assert response.status_code == 302
 
-        rel_obj = group.permissions.through.objects.get()
-
         entry = Entry.objects.get()
         assert entry.action == 'change'
         assert entry.user == admin_user
         assert entry.content_type_repr == 'auth.permission'
         assert entry.object_id == str(obj.pk)
-        assert entry.description == (
-            'Added group-permission relationship '
-            '"Group_permissions object (%s)".'
-        ) % rel_obj.pk
-        assert entry.payload == {'message': [{'added': {
-            'name': 'group-permission relationship',
-            'object': 'Group_permissions object (%s)' % rel_obj.pk
-        }}]}
+
+        if django.VERSION[0] >= 2:
+            rel_obj = group.permissions.through.objects.get()
+            assert entry.description == (
+                'Added group-permission relationship '
+                '"Group_permissions object (%s)".'
+            ) % rel_obj.pk
+
+            assert entry.payload == {'message': [{'added': {
+                'name': 'group-permission relationship',
+                'object': 'Group_permissions object (%s)' % rel_obj.pk
+            }}]}
+        else:
+            assert entry.description == (
+                'Added group-permission relationship '
+                '"Group_permissions object".'
+            )
+
+            if django.VERSION[:2] >= (1, 10):
+                assert entry.payload == {'message': [{'added': {
+                    'name': 'group-permission relationship',
+                    'object': 'Group_permissions object'
+                }}]}
 
     def test_log_change_post_inline_change(self, admin_client, admin_user):
         obj = Permission.objects.create(
@@ -204,22 +229,35 @@ class TestJournaledModelAdminMixin:
         )
         assert response.status_code == 302
 
-        rel_obj = group2.permissions.through.objects.get()
-
         entry = Entry.objects.get()
         assert entry.action == 'change'
         assert entry.user == admin_user
         assert entry.content_type_repr == 'auth.permission'
         assert entry.object_id == str(obj.pk)
-        assert entry.description == (
-            'Changed group for group-permission relationship '
-            '"Group_permissions object (%s)".'
-        ) % rel_obj.pk
-        assert entry.payload == {'message': [{'changed': {
-            'fields': ['group'],
-            'name': 'group-permission relationship',
-            'object': 'Group_permissions object (%s)' % rel_obj.pk
-        }}]}
+
+        if django.VERSION[0] >= 2:
+            rel_obj = group2.permissions.through.objects.get()
+            assert entry.description == (
+                'Changed group for group-permission relationship '
+                '"Group_permissions object (%s)".'
+            ) % rel_obj.pk
+            assert entry.payload == {'message': [{'changed': {
+                'fields': ['group'],
+                'name': 'group-permission relationship',
+                'object': 'Group_permissions object (%s)' % rel_obj.pk
+            }}]}
+        else:
+            assert entry.description == (
+                'Changed group for group-permission relationship '
+                '"Group_permissions object".'
+            )
+
+            if django.VERSION[:2] >= (1, 10):
+                assert entry.payload == {'message': [{'changed': {
+                    'fields': ['group'],
+                    'name': 'group-permission relationship',
+                    'object': 'Group_permissions object'
+                }}]}
 
     def test_log_action(self, admin_client, admin_user):
         obj = Permission.objects.create(

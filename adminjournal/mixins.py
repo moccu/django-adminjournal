@@ -57,14 +57,14 @@ class JournaledModelAdminMixin(object):
         In addition to the Django LogEntry, add another entry to the adminjournal.
         """
         self.log_to_adminjournal(Entry.ACTION_ADD, request.user, message, model)
-        return super().log_addition(request, model, message)
+        return super(JournaledModelAdminMixin, self).log_addition(request, model, message)
 
     def log_change(self, request, model, message):
         """
         In addition to the Django LogEntry, add another entry to the adminjournal.
         """
         self.log_to_adminjournal(Entry.ACTION_CHANGE, request.user, message, model)
-        return super().log_change(request, model, message)
+        return super(JournaledModelAdminMixin, self).log_change(request, model, message)
 
     def log_deletion(self, request, model, object_repr):
         """
@@ -72,7 +72,7 @@ class JournaledModelAdminMixin(object):
         """
         self.log_to_adminjournal(
             Entry.ACTION_DELETE, request.user, 'Deleted "{}"'.format(object_repr), model)
-        return super().log_deletion(request, model, object_repr)
+        return super(JournaledModelAdminMixin, self).log_deletion(request, model, object_repr)
 
     def render_change_form(self, request, *args, **kwargs):
         """
@@ -83,7 +83,8 @@ class JournaledModelAdminMixin(object):
             self.log_to_adminjournal(
                 Entry.ACTION_VIEW, request.user, 'Object viewed.', kwargs['obj'])
 
-        return super().render_change_form(request, *args, **kwargs)
+        return super(JournaledModelAdminMixin, self).render_change_form(
+            request, *args, **kwargs)
 
     def response_action(self, request, queryset):
         """
@@ -108,7 +109,7 @@ class JournaledModelAdminMixin(object):
             selected_all = int(selected_all[action_index]) if selected_all else 0
         except (ValueError, IndexError):
             # Invalidn action request, ignore for logging.
-            return super().response_action(request, queryset)
+            return super(JournaledModelAdminMixin, self).response_action(request, queryset)
 
         action_name = dict(self.get_action_choices(request))[action]
 
@@ -123,7 +124,7 @@ class JournaledModelAdminMixin(object):
                 'selected_ids': selected_ids if not selected_all else [],
             }
         )
-        return super().response_action(request, queryset)
+        return super(JournaledModelAdminMixin, self).response_action(request, queryset)
 
     def changelist_view(self, request, *args, **kwargs):
         """
@@ -135,7 +136,8 @@ class JournaledModelAdminMixin(object):
         Parameters passed to the change list are tracked too. This allows to reconstruct
         the subset of objects a user viewed.
         """
-        response = super().changelist_view(request, *args, **kwargs)
+        response = super(JournaledModelAdminMixin, self).changelist_view(
+            request, *args, **kwargs)
 
         if isinstance(response, TemplateResponse) and 'cl' in response.context_data:
             filters = response.context_data['cl'].params

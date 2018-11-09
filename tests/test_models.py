@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import timedelta
 
 import pytest
@@ -9,7 +10,7 @@ from adminjournal.models import Entry
 @pytest.mark.django_db
 class TestEntryModel:
 
-    def test_repr(self):
+    def test_str(self):
         obj = Entry.objects.create(
             action='VIEW', user_repr='admin', content_type_repr='auth.User')
         assert str(obj) == str(obj.timestamp)

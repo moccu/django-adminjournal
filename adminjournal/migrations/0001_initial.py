@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('content_type_repr', models.CharField(max_length=255, verbose_name='Content type (repr)')),
                 ('object_id', models.TextField(blank=True, null=True, verbose_name='Object ID')),
                 ('description', models.TextField(blank=True, verbose_name='Entry description')),
-                ('payload', django.contrib.postgres.fields.jsonb.JSONField(verbose_name='Payload', default='{}')),
+                ('payload', django.contrib.postgres.fields.jsonb.JSONField(verbose_name='Payload', blank=True, null=True)),
                 ('content_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.ContentType', verbose_name='Content type')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='User')),
             ],

@@ -37,7 +37,7 @@ class EntryAdmin(admin.ModelAdmin):
         Helper to return the human readable entry description. If no description
         is available, the payload will be returned.
         """
-        return obj.description or obj.payload or 'n/a'
+        return str(obj.description or obj.payload or 'n/a')
     lazy_description.short_description = _('Entry description')
 
     def object_repr(self, obj):

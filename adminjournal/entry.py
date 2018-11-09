@@ -2,7 +2,7 @@ from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from .persistence import persist
+from . import persistence
 
 
 class Entry(object):
@@ -74,7 +74,7 @@ class Entry(object):
         class_from_ct = self.content_type.model_class()
         if model and not isinstance(model, class_from_ct):
             raise ValueError('Model / model_class missmatch: {} vs {}'.format(
-                self.model, class_from_ct))
+                model, class_from_ct))
 
         self.model = model
 
@@ -116,4 +116,4 @@ class Entry(object):
         """
         Triggers the persisting of the instance.
         """
-        return persist(self)
+        return persistence.persist(self)

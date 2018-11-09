@@ -23,7 +23,7 @@ class Entry(models.Model):
 
     description = models.TextField(_('Entry description'), blank=True)
 
-    payload = JSONField(_('Payload'), default='{}')
+    payload = JSONField(_('Payload'), blank=True, null=True)
 
     class Meta:
         verbose_name = _('Journal entry')

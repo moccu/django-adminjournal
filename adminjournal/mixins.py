@@ -100,14 +100,17 @@ class JournaledModelAdminMixin(object):
 
         try:
             action_index = int(request.POST.get('index', 0))
+            action = request.POST.getlist('action')[action_index]
+
+            selected_ids = request.POST.getlist('_selected_action')
+
+            selected_all = request.POST.getlist('select_across')
+            selected_all = int(selected_all[action_index]) if selected_all else 0
         except (ValueError, IndexError):
-            action_index = 0
+            # Invalidn action request, ignore for logging.
+            return super().response_action(request, queryset)
 
-        action = request.POST.getlist('action')[action_index]
-        action_name = dict(self.get_action_choices(request)).get(action, 'Unkown action')
-
-        selected_all = int(request.POST.getlist('select_across')[action_index])
-        selected_ids = request.POST.getlist('_selected_action')
+        action_name = dict(self.get_action_choices(request))[action]
 
         self.log_to_adminjournal(
             Entry.ACTION_VIEW,

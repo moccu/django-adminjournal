@@ -28,8 +28,8 @@ class Migration(migrations.Migration):
                 ('object_id', models.TextField(blank=True, null=True, verbose_name='Object ID')),
                 ('description', models.TextField(blank=True, verbose_name='Entry description')),
                 ('payload', django.contrib.postgres.fields.jsonb.JSONField(verbose_name='Payload', blank=True, null=True)),
-                ('content_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.ContentType', verbose_name='Content type')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                ('content_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.ContentType', verbose_name='Content type', related_name='+')),
+                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='User', related_name='+')),
             ],
             options={
                 'verbose_name': 'Journal entry',

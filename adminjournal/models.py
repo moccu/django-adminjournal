@@ -11,12 +11,12 @@ class Entry(models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_('User'),
-        on_delete=models.SET_NULL, blank=True, null=True)
+        on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
     user_repr = models.CharField(_('User (repr)'), max_length=255)
 
     content_type = models.ForeignKey(
         'contenttypes.ContentType', verbose_name=_('Content type'),
-        on_delete=models.SET_NULL, blank=True, null=True)
+        on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
     content_type_repr = models.CharField(_('Content type (repr)'), max_length=255)
 
     object_id = models.TextField(_('Object ID'), blank=True, null=True)
